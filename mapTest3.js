@@ -11,6 +11,16 @@ window.startMarker = new google.maps.Marker({
   icon: defaultIcon
 });
 
+window.endPosi = document.querySelector(".end-address").value;
+window.endMarker = new google.maps.Marker({
+  position: endPosi,
+  map: map,
+  title: 'End Marker!',
+  animation: google.maps.Animation.DROP,
+  icon: defaultIcon
+});
+
+
 function initMap() {
   const directionsService = new google.maps.DirectionsService();
   const directionsRenderer = new google.maps.DirectionsRenderer();
@@ -283,24 +293,10 @@ function initMap() {
   });
 
   // 板橋車站 25.014615804593976, 121.4633388730153
-  // const destinationIcon =
-  //   "https://chart.googleapis.com/chart?" +
-  //   "chst=d_map_pin_letter&chld=D|FF0000|000000";
-  // const originIcon =
-  //   "https://chart.googleapis.com/chart?" +
-  //   "chst=d_map_pin_letter&chld=O|FFFF00|000000";
+
   directionsRenderer.setMap(map);
 
-  // document.querySelector('#btn-cal').addEventListener('click', onChangeHandler)
-
- 
-  // document.getElementById("start-address").addEventListener("change", onChangeHandler);
-  // document.getElementById("end-address").addEventListener("change", onChangeHandler);
-  // document.querySelector('btn-cal').addEventListener('click', calculateAndDisplayRoute(directionsService, directionsRenderer));
-
-  // 顯示距離及所需時間
-  // const origin1 = document.getElementById('start-address').value
-  // const destination1 = document.getElementById('end-address').value
+  
   const geocoder = new google.maps.Geocoder();
 
   setupEvents(directionsService, directionsRenderer)
@@ -310,6 +306,7 @@ function initMap() {
   autoDetectYourPos(directionsService, directionsRenderer)
 
   DistanceMatrixService(directionsService, directionsRenderer)
+  
 }
 
 function setupEvents(directionsService, directionsRenderer) {
@@ -387,9 +384,9 @@ function autoDetectYourPos(directionsService, directionsRenderer) {
 }
 
 // ----------------------------------------------------
-function DistanceMatrixService(directionsService, directionsRenderer){
-  let service = new google.maps.DistanceMatrixService();
-  // console.log(window.currentPos.latitude);
+
+function DistanceMatrixService(){
+    var service = new google.maps.DistanceMatrixService();
   service.getDistanceMatrix(
     {
       origin: { 
@@ -412,73 +409,65 @@ function DistanceMatrixService(directionsService, directionsRenderer){
 }
 // ----------------------------------------------------
 
-function searchWithinTime() {
-  var distanceMatrixService = new google.maps.DistanceMatrixService;
-  var address = document.getElementById("end-address").value;
-  if (address == '') {
-    window.alert('You must enter an address.');
-  } else {
-    // var origins = [];
-    // for (var i = 0; i < markers.length; i++) {
-      origins = startMarker.position;
-    // }
-    var destination = address;
-    var mode = document.getElementById('mode').value;
-    // Now that both the origins and destination are defined, get all the
-    // info for the distances between them.
-    distanceMatrixService.getDistanceMatrix({
-      origins: { 
-                lat: window.currentPos.latitude, 
-                lng: window.currentPos.longitude
-              },
-      destinations: {
-                query: document.getElementById("end-address").value,
-              },
-      travelMode: google.maps.TravelMode.DRIVING,
-      unitSystem: google.maps.UnitSystem.IMPERIAL,
-    }, function(response, status) {
-      if (status !== google.maps.DistanceMatrixStatus.OK) {
-        window.alert('Error was: ' + status);
-      } else {
-        displayMarkersWithinTime(response);
-      }
-    });
-  }
-}
+// google.maps.event.addDomListener(window,"load", searchWithinTime);
 
-function displayMarkersWithinTime(response) {
-  // var maxDuration = document.getElementById('max-duration').value;
-  var origins = response.originAddresses;
-  var destinations = response.destinationAddresses;
-  // Parse through the results, and get the distance and duration of each.
-  // Because there might be  multiple origins and destinations we have a nested loop
-  // Then, make sure at least 1 result was found.
-  // var atLeastOne = false;
-  for (var i = 0; i < origins.length; i++) {
-    var results = response.rows[i].elements;
-    for (var j = 0; j < results.length; j++) {
-      var element = results[j];
-      if (element.status === "OK") {
-        var distanceText = element.distance.text;
-        var duration = element.duration.value / 60;
-        var durationText = element.duration.text;
+// function searchWithinTime() {
+//     // console.log('123123');
+//   var distanceMatrixService = new google.maps.DistanceMatrixService;
+//   var address = document.getElementById("end-address").value;
+//   if (address == '') {
+//     window.alert('You must enter an address.');
+//   } else {
+//     distanceMatrixService.getDistanceMatrix({
+//       origins: 
+//             {lat: 25.014615804593976, 
+//             lng: 121.4633388730153},
+//       destinations: {
+//             query: document.getElementById("end-address").value,
+//             },
+//       travelMode: google.maps.TravelMode.DRIVING,
+//       unitSystem: google.maps.UnitSystem.IMPERIAL,
+//     }, function(response, status) {
+//       if (status !== google.maps.DistanceMatrixStatus.OK) {
+//         window.alert('Error was: ' + status);
+//       } else {
+//           console.log('aassdsdad')
+//         displayMarkersWithinTime(response);
+//       }
+//     });
+//   }
+// }
 
 
-        startMarker.setMap(map);
-          // atLeastOne = true;
+// function displayMarkersWithinTime(response) {
 
-          var infowindow = new google.maps.InfoWindow({
-            content: durationText + ' away, ' + distanceText +
-              '<div><input type=\"button\" value=\"View Route\" onclick =' +
-              '\"displayDirections(&quot;' + origins + '&quot;);\"></input></div>'
-          });
-          infowindow.open(map, startMarker);
+//   var destinations = response.destinationAddresses;
 
-          google.maps.event.addListener(startMarker, 'click', function() {
+//   for (var i = 0; i < origins.length; i++) {
+//     var results = response.rows[i].elements;
+//     for (var j = 0; j < results.length; j++) {
+//       var element = results[j];
+//       if (element.status === "OK") {
+//         var distanceText = element.distance.text;
+//         var duration = element.duration.value / 60;
+//         var durationText = element.duration.text;
+
+
+//         startMarker.setMap(map);
+//           // atLeastOne = true;
+
+//           var infowindow = new google.maps.InfoWindow({
+//             content: durationText + ' away, ' + distanceText +
+//               '<div><input type=\"button\" value=\"View Route\" onclick =' +
+//               '\"displayDirections(&quot;' + origins + '&quot;);\"></input></div>'
+//           });
+//           infowindow.open(map, startMarker);
+
+//           google.maps.event.addListener(startMarker, 'click', function() {
    
-          });
+//           });
 
-      }
-    }
-  }
-}
+//       }
+//     }
+//   }
+// }

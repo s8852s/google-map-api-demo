@@ -5,8 +5,10 @@ function initMap() {
   const directionsRenderer = new google.maps.DirectionsRenderer();
   const map = new google.maps.Map(document.getElementById("map"), {
     zoom: 18,
-    center: {lat: 25.042440044101546, lng: 121.51375921945278},
+    center: {lat: 25.0147130292605986, lng: 121.46336033068708},
   });
+
+   //板橋車站 25.014713029260598, 121.46336033068708
   // const destinationIcon =
   //   "https://chart.googleapis.com/chart?" +
   //   "chst=d_map_pin_letter&chld=D|FF0000|000000";
