@@ -3,27 +3,29 @@ window.currentPos = {
   longitude: null
 }
 window.startPosi = {lat: window.currentPos.latitude, lng: window.currentPos.longitude};
-window.startMarker = new google.maps.Marker({
-  position: startPosi,
-  map: map,
-  title: 'First Marker!',
-  animation: google.maps.Animation.DROP,
-  icon: defaultIcon
-});
+// window.startMarker = new google.maps.Marker({
+//   position: startPosi,
+//   map: map,
+//   title: 'First Marker!',
+//   animation: google.maps.Animation.DROP,
+//   icon: defaultIcon
+// });
 
-window.endPosi = document.querySelector(".end-address").value;
-window.endMarker = new google.maps.Marker({
-  position: endPosi,
-  map: map,
-  title: 'End Marker!',
-  animation: google.maps.Animation.DROP,
-  icon: defaultIcon
-});
-
-
+// window.endPosi = document.querySelector(".end-address").value;
+// window.endMarker = new google.maps.Marker({
+//   position: endPosi,
+//   map: map,
+//   title: 'End Marker!',
+//   animation: google.maps.Animation.DROP,
+//   icon: defaultIcon
+// });
+document.addEventListener("DOMContentLoaded", initMap)
+// document.addEventListener(DOMContentLoaded, initMap)
 function initMap() {
   const directionsService = new google.maps.DirectionsService();
   const directionsRenderer = new google.maps.DirectionsRenderer();
+//   const distanceMatrix = new google.maps.DistanceMatrixService();
+  
   const map = new google.maps.Map(document.getElementById("map"), {
     zoom: 18,
     center: {lat: 25.014615804593976, lng: 121.4633388730153},
@@ -291,23 +293,29 @@ function initMap() {
       }
   ]
   });
+  var locations = [
+    {title: '板橋車站', location: {lat: 25.014499118873864, lng: 121.4632315819448}},
+    {title: '台北車站', location: {lat: 25.047829614909368, lng: 121.51737528087179}},
+    {title: '二二八公園', location: {lat: 25.04189342615461, lng: 121.51496603961701}},
+    {title: '臺大醫院', location: {lat: 25.042613480677044, lng: 121.51854804295617}},
+    {title: '總統府', location: {lat: 25.040082583969493, lng: 121.51194396845271}},
+    {title: '龍山寺', location: {lat: 25.037153902969788, lng: 121.49992444654679}},
+    {title: '大安森林公園', location: {lat: 25.033208656976786, lng: 121.53515702658704}},
+    {title: '寧夏夜市', location: {lat: 25.056006380834173, lng:  121.51529418477676}}
+  ];
 
-  // 板橋車站 25.014615804593976, 121.4633388730153
-
+  // 板橋車站 {lat: 25.014615804593976, lng: 121.4633388730153}
+  // 台北車站 {lat: 121.517498, lng: 25.046273}
   directionsRenderer.setMap(map);
-
-  
   const geocoder = new google.maps.Geocoder();
-
   setupEvents(directionsService, directionsRenderer)
-
   geoFindMe(directionsService, directionsRenderer)
-
   autoDetectYourPos(directionsService, directionsRenderer)
-
-  DistanceMatrixService(directionsService, directionsRenderer)
+  
+  distanceMatrixService()
   
 }
+
 
 function setupEvents(directionsService, directionsRenderer) {
   document.getElementById('end-address').addEventListener('change', function (e) {
@@ -380,94 +388,46 @@ function geoFindMe(directionsService, directionsRenderer, autoCalc) {
 function autoDetectYourPos(directionsService, directionsRenderer) {
   window.setInterval(function() {
     geoFindMe(directionsService, directionsRenderer, true)
-  }, 100000)
+  }, 1000000000)
 }
 
 // ----------------------------------------------------
 
-function DistanceMatrixService(){
-    var service = new google.maps.DistanceMatrixService();
-  service.getDistanceMatrix(
-    {
-      origin: { 
+// document.addEventListener('DOMContentLoaded', DistanceMatrixService)
+
+document.querySelector('.btn-cal').addEventListener('click', distanceMatrixService)
+// const distanceMatrix = new google.maps.DistanceMatrixService();
+function distanceMatrixService(){
+    var origin1 = new google.maps.LatLng(window.currentPos.latitude, window.currentPos.longitude);
+    var distanceMatrix = new google.maps.DistanceMatrixService;
+    console.log(distanceMatrix);
+    console.log({ 
         lat: window.currentPos.latitude, 
-        lng: window.currentPos.longitude
-      },
-      destination: {
-        query: document.getElementById("end-address").value,
-      },
-      travelMode: google.maps.TravelMode.DRIVING,
-      unitSystem: google.maps.UnitSystem.METRIC,
-    }, function(response, status) {
-     if (status !== google.maps.DistanceMatrixStatus.OK) {
-       window.alert('Error was' + status);
-      //  console.log('OK');
-     } else {
-       console.log(response);
-     }
-  }); 
+        lng: window.currentPos.longitude, 
+        });
+    distanceMatrix.getDistanceMatrix(
+        {
+            origins: [origin1],
+            destinations: [document.getElementById("end-address").value],
+            travelMode: google.maps.TravelMode.DRIVING,
+            unitSystem: google.maps.UnitSystem.METRIC,
+        },
+        (response, status) => {
+        if (status !== google.maps.DistanceMatrixStatus.OK) {
+          window.alert('Error was' + status);
+        } else {
+            displayDistanceAndTime(response)
+            console.log(response)
+        }
+      })
+
 }
-// ----------------------------------------------------
+function displayDistanceAndTime(response) {
+    // var element = results;
+    var durationText = response.rows[0].elements[0].duration.text
+    var distanceText = response.rows[0].elements[0].distance.text
+    outputText = document.createElement('p')
+    outputText.innerHTML = `<p>距離: ${distanceText} / 時間: ${durationText}</p>`
+    output.appendChild(outputText)
 
-// google.maps.event.addDomListener(window,"load", searchWithinTime);
-
-// function searchWithinTime() {
-//     // console.log('123123');
-//   var distanceMatrixService = new google.maps.DistanceMatrixService;
-//   var address = document.getElementById("end-address").value;
-//   if (address == '') {
-//     window.alert('You must enter an address.');
-//   } else {
-//     distanceMatrixService.getDistanceMatrix({
-//       origins: 
-//             {lat: 25.014615804593976, 
-//             lng: 121.4633388730153},
-//       destinations: {
-//             query: document.getElementById("end-address").value,
-//             },
-//       travelMode: google.maps.TravelMode.DRIVING,
-//       unitSystem: google.maps.UnitSystem.IMPERIAL,
-//     }, function(response, status) {
-//       if (status !== google.maps.DistanceMatrixStatus.OK) {
-//         window.alert('Error was: ' + status);
-//       } else {
-//           console.log('aassdsdad')
-//         displayMarkersWithinTime(response);
-//       }
-//     });
-//   }
-// }
-
-
-// function displayMarkersWithinTime(response) {
-
-//   var destinations = response.destinationAddresses;
-
-//   for (var i = 0; i < origins.length; i++) {
-//     var results = response.rows[i].elements;
-//     for (var j = 0; j < results.length; j++) {
-//       var element = results[j];
-//       if (element.status === "OK") {
-//         var distanceText = element.distance.text;
-//         var duration = element.duration.value / 60;
-//         var durationText = element.duration.text;
-
-
-//         startMarker.setMap(map);
-//           // atLeastOne = true;
-
-//           var infowindow = new google.maps.InfoWindow({
-//             content: durationText + ' away, ' + distanceText +
-//               '<div><input type=\"button\" value=\"View Route\" onclick =' +
-//               '\"displayDirections(&quot;' + origins + '&quot;);\"></input></div>'
-//           });
-//           infowindow.open(map, startMarker);
-
-//           google.maps.event.addListener(startMarker, 'click', function() {
-   
-//           });
-
-//       }
-//     }
-//   }
-// }
+  }
